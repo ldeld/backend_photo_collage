@@ -1,11 +1,11 @@
 class CollagesController < ApplicationController
   def create
-    binding.pry
     collage = Collage.new(collage_params)
     if collage.save
       GenerateCollageJob.perform_later(collage)
+      render collage
     else
-      render :ok
+      render collage.errors
     end
   end
 
