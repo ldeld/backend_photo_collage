@@ -3,9 +3,21 @@ class CollagesController < ApplicationController
     collage = Collage.new(collage_params)
     if collage.save
       GenerateCollageJob.perform_later(collage)
-      render collage
+      render json: collage
     else
-      render collage.errors
+      renders json: collage.errors
+    end
+  end
+
+  def status
+    collage = Collage.find_by_id(params[:collage_id])
+    render(status: :not_found) && return if collage.nil?
+
+    if collage.final_image.attached?
+      render json: { url: collage.final_image.url }
+    else
+      # retun 202 code (accepted but not done processing)
+      render status: :accepted
     end
   end
 

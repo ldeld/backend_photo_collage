@@ -20,6 +20,7 @@ gem 'puma', '~> 5.0'
 # Use Active Storage variant
 gem 'image_processing', '~> 1.2'
 
+gem 'mini_magick'
 # Background jobs
 gem 'sidekiq'
 gem 'sidekiq-failures', '~> 1.0'
