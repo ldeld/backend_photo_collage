@@ -1,9 +1,9 @@
-class GenerateCollageJob < ApplicationJob
-  queue_as :default
+class GenerateCollageWorker
+  include Sidekiq::Worker
 
-  def perform(collage)
-    @collage = collage
-    @images = collage.collage_elements.map do |ce|
+  def perform(collage_id)
+    @collage = Collage.find(collage_id)
+    @images = @collage.collage_elements.map do |ce|
       MiniMagick::Image.open(ce.image.url)
     end
 

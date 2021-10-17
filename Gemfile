@@ -24,6 +24,7 @@ gem 'mini_magick'
 # Background jobs
 gem 'sidekiq'
 gem 'sidekiq-failures', '~> 1.0'
+gem 'sidekiq-batch'
 
 # Image storing
 gem 'aws-sdk-s3', require: false

@@ -2,7 +2,7 @@ class CollagesController < ApplicationController
   def create
     collage = Collage.new(collage_params)
     if collage.save
-      GenerateCollageJob.perform_later(collage)
+      GenerateCollageWorker.perform_async(collage.id)
       render json: collage
     else
       renders json: collage.errors
