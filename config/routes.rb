@@ -3,4 +3,12 @@ Rails.application.routes.draw do
   resources :collages, only: [:create] do
     get "/status", to: "collages#status"
   end
+
+  Sidekiq::Web.use(Rack::Auth::Basic) do |username, password|
+    # username == Rails.application.credentials[Rails.env.to_sym][:sidekiqweb][:username] &&
+      # password == Rails.application.credentials[Rails.env.to_sym][:sidekiqweb][:password]
+      username == "lolo" && password == "admin" 
+  end
+  
+  mount(Sidekiq::Web => "/sidekiq")
 end

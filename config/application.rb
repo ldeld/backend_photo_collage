@@ -38,5 +38,12 @@ module BackendPhotoCollage
     config.api_only = true
 
     config.active_job.queue_adapter = :sidekiq
+
+    # Add back session for sidekiq admin webpanel
+    config.session_store :cookie_store, key: '_interslice_session'
+    # Required for all session management (regardless of session_store)
+    config.middleware.use ActionDispatch::Cookies
+
+    config.middleware.use config.session_store, config.session_options
   end
 end
