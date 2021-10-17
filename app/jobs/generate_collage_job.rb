@@ -18,10 +18,13 @@ class GenerateCollageJob < ApplicationJob
   def resize_and_border_images
     # first implementation keeping it vertical
     # find narrowest images to fit others to it
-    width_to_fit = @images.min_by { |image| image.width }.width
+    dimension_to_resize = @collage.horizontal? ? :height : :width
+
+    size_to_fit = @images.map { |image| image.send(dimension_to_resize) }.min
 
     @images.each do |image|
-      ratio_to_resize = (width_to_fit.to_f / image.width) * 100
+      # TODO: turn this inot a small job and run concurrently
+      ratio_to_resize = (size_to_fit.to_f / image.send(dimension_to_resize)) * 100
       image.combine_options do |i|
         i.resize("#{ratio_to_resize}%")
         i.bordercolor("##{@collage.border_color}")
@@ -32,13 +35,15 @@ class GenerateCollageJob < ApplicationJob
 
   def join_images
     # Append @images together
-    # convert image1 image2 -append result
-    output_file_path = Rails.root.join('tmp/output.jpg')
+    # final command is: convert image1 image2 (-/+)append result
+    output_file_path = Rails.root.join("tmp/collage_#{@collage.id}.jpg")
     convert = MiniMagick::Tool::Convert.new
     @images.each do |image|
       convert << image.path
     end
-    convert.append
+    convert_sign = @collage.horizontal? ? '+' : '-'
+    # ImageMacick command: -append for vertical, +append for horizontal, see: https://stackoverflow.com/questions/20737061/merge-images-side-by-sidehorizontally/20749970
+    convert << "#{convert_sign}append"
     convert << output_file_path
     convert.call
 

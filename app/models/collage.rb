@@ -5,4 +5,12 @@ class Collage < ApplicationRecord
   accepts_nested_attributes_for :collage_elements, allow_destroy: true
 
   validates_inclusion_of :orientation, in: %w( horizontal vertical ), on: :create, message: "%s is not a valid orientation"
+
+  def horizontal?
+    orientation == 'horizontal'
+  end
+
+  def vertical?
+    !horizontal?
+  end
 end
